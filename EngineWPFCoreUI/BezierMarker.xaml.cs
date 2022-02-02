@@ -100,6 +100,7 @@ namespace EngineWPFCoreUI
             var input = (BezierMarker)d;
 
             input.elR.Visibility = newval ? Visibility.Visible : Visibility.Collapsed;
+            input.l2.Visibility = newval ? Visibility.Visible : Visibility.Collapsed;
         }
         private static void LVisibleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -107,6 +108,7 @@ namespace EngineWPFCoreUI
             var input = (BezierMarker)d;
 
             input.elL.Visibility = newval ? Visibility.Visible : Visibility.Collapsed;
+            input.l1.Visibility = newval ? Visibility.Visible : Visibility.Collapsed;
         }
 
 
@@ -134,8 +136,32 @@ namespace EngineWPFCoreUI
         enum Selected
         { L, P, R, None}
         Selected sel = Selected.None;
+
+        bool linear = false;
         private void rect_MouseDown(object sender, MouseButtonEventArgs e)
         {
+            if(Keyboard.IsKeyDown(Key.LeftAlt))
+            {
+                if(!linear)
+                {
+                    linear = true;
+                    L = P;
+                    R = P;
+                    //RVisible = false;
+                    //LVisible = false;
+                }
+                else
+                {
+                    linear = false;
+                    L = new Point(P.X - 10, P.Y);
+                    R = new Point(P.X + 10, P.Y);
+                    //RVisible = true;
+                    //LVisible = true;
+                }
+               
+                return;
+            }
+
             Mouse.Capture(this);
             sel = Selected.P;
         }

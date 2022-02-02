@@ -11,32 +11,42 @@
         <Canvas ClipToBounds="True">
             <Button Click="Button_Click">Add</Button>
 
-            <ItemsControl ItemsSource="{Binding Segments}">
+            <ItemsControl ItemsSource="{Binding Functions}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <local:MyBezierSegment 
+                        <Canvas>
+                            <ItemsControl ItemsSource="{Binding Segments}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <local:MyBezierSegment 
                             P1 = "{Binding P1}"
                             R1 = "{Binding R1}"
                             L2 = "{Binding L2}"
                             P2 = "{Binding P2}"
-                            Color="DarkOliveGreen"></local:MyBezierSegment>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+                            Color="{Binding Path=DataContext.Color, RelativeSource={RelativeSource  AncestorType={x:Type ItemsControl}}}"></local:MyBezierSegment>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
 
 
-            <ItemsControl ItemsSource="{Binding KeyFrames}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <local:BezierMarker P="{Binding P, Mode=TwoWay}" 
+                            <ItemsControl ItemsSource="{Binding KeyFrames}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <local:BezierMarker P="{Binding P, Mode=TwoWay}" 
                                             L="{Binding L, Mode=TwoWay}" 
                                             R="{Binding R, Mode=TwoWay}" 
                                             RVisible="{Binding RVisible}"
                                             LVisible="{Binding LVisible}"
-                                            Color="DarkOliveGreen"></local:BezierMarker>
+                                            Color="{Binding Path=DataContext.Color, RelativeSource={RelativeSource  AncestorType={x:Type ItemsControl}}}"></local:BezierMarker>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </Canvas>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
+            
+            
         </Canvas>
     </Grid>
 </UserControl>

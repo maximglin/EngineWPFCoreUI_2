@@ -8,14 +8,14 @@
              d:DesignHeight="450" d:DesignWidth="800"
              MouseMove="Canvas_MouseMove" MouseUp="UserControl_MouseUp">
     <Canvas x:Name="canvas">
-        <Rectangle Width="10" Height="10" Fill="DarkGray" x:Name="rect" x:FieldModifier="protected" MouseDown="rect_MouseDown">
-            <Rectangle.RenderTransform>
-                <TransformGroup>
-                    <TranslateTransform x:Name="Ppos" X="50" Y="50"></TranslateTransform>
-                    <TranslateTransform X="-5" Y="-5"></TranslateTransform>
-                </TransformGroup>
-            </Rectangle.RenderTransform>
-        </Rectangle>
+
+        <Line Stroke="DarkGray" StrokeThickness="0.5" x:Name="l1" x:FieldModifier="protected"
+              X1="{Binding ElementName=Lpos, Path=X}" Y1="{Binding ElementName=Lpos, Path=Y}"
+              X2="{Binding ElementName=Ppos, Path=X}" Y2="{Binding ElementName=Ppos, Path=Y}"></Line>
+
+        <Line Stroke="DarkGray" StrokeThickness="0.5" x:Name="l2" x:FieldModifier="protected"
+              X1="{Binding ElementName=Rpos, Path=X}" Y1="{Binding ElementName=Rpos, Path=Y}"
+              X2="{Binding ElementName=Ppos, Path=X}" Y2="{Binding ElementName=Ppos, Path=Y}"></Line>
 
         <Ellipse Width="8" Height="8" Fill="DarkGray" x:Name="elL" x:FieldModifier="protected" MouseDown="elL_MouseDown">
             <Ellipse.RenderTransform>
@@ -36,12 +36,13 @@
             </Ellipse.RenderTransform>
         </Ellipse>
 
-        <Line Stroke="DarkGray" StrokeThickness="0.5" x:Name="l1" x:FieldModifier="protected"
-              X1="{Binding ElementName=Lpos, Path=X}" Y1="{Binding ElementName=Lpos, Path=Y}"
-              X2="{Binding ElementName=Ppos, Path=X}" Y2="{Binding ElementName=Ppos, Path=Y}"></Line>
-
-        <Line Stroke="DarkGray" StrokeThickness="0.5" x:Name="l2" x:FieldModifier="protected"
-              X1="{Binding ElementName=Rpos, Path=X}" Y1="{Binding ElementName=Rpos, Path=Y}"
-              X2="{Binding ElementName=Ppos, Path=X}" Y2="{Binding ElementName=Ppos, Path=Y}"></Line>
+        <Rectangle Width="10" Height="10" Fill="DarkGray" x:Name="rect" x:FieldModifier="protected" MouseDown="rect_MouseDown">
+            <Rectangle.RenderTransform>
+                <TransformGroup>
+                    <TranslateTransform x:Name="Ppos" X="50" Y="50"></TranslateTransform>
+                    <TranslateTransform X="-5" Y="-5"></TranslateTransform>
+                </TransformGroup>
+            </Rectangle.RenderTransform>
+        </Rectangle>
     </Canvas>
 </UserControl>
