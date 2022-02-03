@@ -9,8 +9,11 @@
     <Grid>
         
         <Canvas ClipToBounds="True">
-            <Button Click="Button_Click">Add</Button>
-
+            <WrapPanel>
+                <Button Click="Button_Click">Add</Button>
+                <Button Click="Button_Click_1">Test</Button>
+            </WrapPanel>
+            
             <ItemsControl ItemsSource="{Binding Functions}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
@@ -32,9 +35,12 @@
                             <ItemsControl ItemsSource="{Binding KeyFrames}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <local:BezierMarker P="{Binding P, Mode=TwoWay}" 
+                                        <local:BezierMarker 
+                                            P="{Binding P, Mode=TwoWay}" 
+                                            P2="{Binding P2, Mode=TwoWay}"
                                             L="{Binding L, Mode=TwoWay}" 
                                             R="{Binding R, Mode=TwoWay}" 
+                                            Split="{Binding Split, Mode=TwoWay}"
                                             RVisible="{Binding RVisible}"
                                             LVisible="{Binding LVisible}"
                                             Color="{Binding Path=DataContext.Color, RelativeSource={RelativeSource  AncestorType={x:Type ItemsControl}}}"></local:BezierMarker>

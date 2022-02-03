@@ -15,7 +15,11 @@
 
         <Line Stroke="DarkGray" StrokeThickness="0.5" x:Name="l2" x:FieldModifier="protected"
               X1="{Binding ElementName=Rpos, Path=X}" Y1="{Binding ElementName=Rpos, Path=Y}"
-              X2="{Binding ElementName=Ppos, Path=X}" Y2="{Binding ElementName=Ppos, Path=Y}"></Line>
+              X2="{Binding ElementName=P22pos, Path=X}" Y2="{Binding ElementName=P22pos, Path=Y}"></Line>
+
+        <Line Stroke="DarkGray" StrokeThickness="1" x:Name="connector" x:FieldModifier="protected"
+              X1="{Binding ElementName=Ppos, Path=X}" Y1="{Binding ElementName=Ppos, Path=Y}"
+              X2="{Binding ElementName=P22pos, Path=X}" Y2="{Binding ElementName=P22pos, Path=Y}"></Line>
 
         <Ellipse Width="8" Height="8" Fill="DarkGray" x:Name="elL" x:FieldModifier="protected" MouseDown="elL_MouseDown">
             <Ellipse.RenderTransform>
@@ -41,6 +45,23 @@
                 <TransformGroup>
                     <TranslateTransform x:Name="Ppos" X="50" Y="50"></TranslateTransform>
                     <TranslateTransform X="-5" Y="-5"></TranslateTransform>
+                </TransformGroup>
+            </Rectangle.RenderTransform>
+        </Rectangle>
+
+        <Rectangle Width="7.5" Height="10" Fill="DarkGray" x:Name="rect21" x:FieldModifier="protected" MouseDown="rect_MouseDown" Visibility="Collapsed">
+            <Rectangle.RenderTransform>
+                <TransformGroup>
+                    <TranslateTransform x:Name="P21pos" X="50" Y="50"></TranslateTransform>
+                    <TranslateTransform X="-7.5" Y="-5"></TranslateTransform>
+                </TransformGroup>
+            </Rectangle.RenderTransform>
+        </Rectangle>
+        <Rectangle Width="8" Height="10" Fill="DarkGray" x:Name="rect22" x:FieldModifier="protected" MouseDown="rect2_MouseDown" Visibility="Collapsed">
+            <Rectangle.RenderTransform>
+                <TransformGroup>
+                    <TranslateTransform x:Name="P22pos" X="50" Y="50"></TranslateTransform>
+                    <TranslateTransform X="0" Y="-5"></TranslateTransform>
                 </TransformGroup>
             </Rectangle.RenderTransform>
         </Rectangle>

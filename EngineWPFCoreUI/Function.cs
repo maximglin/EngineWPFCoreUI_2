@@ -12,25 +12,32 @@ namespace EngineWPFCoreUI
         float GetValue(float t);
     }
 
-    abstract class FunctionSection : IFunction
+    interface FunctionSection : IFunction
     {
         public float Tstart { get; }
         public float Tend { get; }
 
-        public abstract float GetValue(float t);
     }
 
     class BezierFunctionSection : FunctionSection
     {
+        public BezierFunctionSection(IEnumerable<KeyFrame> keyFrames)
+        {
+            SetKeyframes(keyFrames);
+        }
+
         public struct KeyFrame
         {
-            public PointF L, R, P;         
+            public PointF L, R;
+            public float Px, PLy, PRy;
+            public PointF PL { get => new PointF(Px, PLy); set { Px = value.X; PLy = value.Y; } }
+            public PointF PR { get => new PointF(Px, PRy); set { Px = value.X; PRy = value.Y; } }
         }
         class KeyFrameComparer : IComparer<KeyFrame>
         {
             public int Compare(KeyFrame a, KeyFrame b)
             {
-                return a.P.X.CompareTo(b.P.X);
+                return a.PL.X.CompareTo(b.PL.X);
             }
         }
 
@@ -100,30 +107,49 @@ namespace EngineWPFCoreUI
             }
         }
         List<CubicSegment> cubicsegments = new();
+        const float epsilon = 0.00001f;
         public void SetKeyframes(IEnumerable<KeyFrame> keyFrames)
         {
             keyframes = keyFrames.ToList();
             keyframes.Sort(new KeyFrameComparer());
+            
+            bool f = true;
+            while(f) //move keyframes which are too close to each other
+            {
+                f = false;
+                for (int i = keyframes.Count - 1; i > 0; i--)
+                {
+                    if (MathF.Abs(keyframes[i].Px - keyframes[i - 1].Px) > epsilon)
+                    {
+                        var tmp = keyframes[i];
+                        tmp.Px += epsilon;
+                        keyframes[i] = tmp;
+                        f = true; 
+                    }
+                }
+            }
+            
 
             cubicsegments.Clear();
             for (int i = 0; i < keyframes.Count - 1; i++)
                 cubicsegments.Add(new CubicSegment(
-                    keyframes[i].P, keyframes[i].R,
-                    keyframes[i+1].L, keyframes[i+1].P
+                    keyframes[i].PR, keyframes[i].R,
+                    keyframes[i+1].L, keyframes[i+1].PL
                     ));
         }
 
-        
 
+        public float Tstart => keyframes.Count > 0 ? keyframes.First().Px : 0f;
+        public float Tend => keyframes.Count > 0 ? keyframes.Last().Px : 0f;
 
-        public override float GetValue(float t)
+        public float GetValue(float t)
         {
             if(keyframes.Count > 0)
             {
-                if (t <= keyframes.First().P.X)
-                    return keyframes.First().P.Y;
-                if (t >= keyframes.Last().P.X)
-                    return keyframes.Last().P.Y;
+                if (t <= keyframes.First().Px)
+                    return keyframes.First().PL.Y;
+                if (t >= keyframes.Last().Px)
+                    return keyframes.Last().PR.Y;
 
 
                 for (int i = 0; i < cubicsegments.Count; i++)
@@ -138,8 +164,16 @@ namespace EngineWPFCoreUI
 
     class ConstantFunctionSection : FunctionSection
     {
+        public float Tstart { get; set; }
+        public float Tend { get; set; }
+        public ConstantFunctionSection(float value, float tst, float tend)
+        {
+            Value = value;
+            Tstart = tst;
+            Tend = tend;
+        }
         public float Value { get; set; }
-        public override float GetValue(float t)
+        public float GetValue(float t)
         {
             return Value;
         }

@@ -31,6 +31,11 @@ namespace EngineWPFCoreUI
         
             RVisibleProperty = DependencyProperty.Register(nameof(RVisible), typeof(bool), typeof(BezierMarker), new PropertyMetadata(true, RVisibleChanged));
             LVisibleProperty = DependencyProperty.Register(nameof(LVisible), typeof(bool), typeof(BezierMarker), new PropertyMetadata(true, LVisibleChanged));
+
+            P2Property = DependencyProperty.Register(nameof(P2), typeof(Point), typeof(BezierMarker), new PropertyMetadata(new Point(), P2Changed));
+
+
+            SplitProperty = DependencyProperty.Register(nameof(Split), typeof(bool), typeof(BezierMarker), new PropertyMetadata(false, SplitChanged));
         }
 
         private static void ColorChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -43,6 +48,10 @@ namespace EngineWPFCoreUI
             input.elR.Fill = newval;
             input.l1.Stroke = newval;
             input.l2.Stroke = newval;
+
+            input.rect21.Fill = newval;
+            input.rect22.Fill = newval;
+            input.connector.Stroke = newval;
         }
 
         private static void PChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -52,6 +61,14 @@ namespace EngineWPFCoreUI
 
             input.Ppos.X = newval.X;
             input.Ppos.Y = newval.Y;
+
+            input.P21pos.X = newval.X;
+            input.P21pos.Y = newval.Y;
+            if (input.Split == false)
+            {
+                input.P22pos.X = newval.X;
+                input.P22pos.Y = newval.Y;
+            }
         }
 
         public static readonly DependencyProperty PProperty;
@@ -60,6 +77,26 @@ namespace EngineWPFCoreUI
             get => (Point)base.GetValue(PProperty);
             set => base.SetValue(PProperty, value);
         }
+
+        
+        private static void P2Changed(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var newval = (Point)e.NewValue;
+            var input = (BezierMarker)d;
+
+            {
+                input.P22pos.X = newval.X;
+                input.P22pos.Y = newval.Y;
+            }
+        }
+
+        public static readonly DependencyProperty P2Property;
+        public Point P2
+        {
+            get => (Point)base.GetValue(P2Property);
+            set => base.SetValue(P2Property, value);
+        }
+
         private static void LChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var newval = (Point)e.NewValue;
@@ -133,38 +170,112 @@ namespace EngineWPFCoreUI
             set => base.SetValue(LVisibleProperty, value);
         }
 
+
+        private static void SplitChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var newval = (bool)e.NewValue;
+            var input = (BezierMarker)d;
+
+
+            input.rect21.Visibility = newval ? Visibility.Visible : Visibility.Collapsed;
+            input.rect22.Visibility = newval ? Visibility.Visible : Visibility.Collapsed;
+            input.rect.Visibility =  !newval ? Visibility.Visible : Visibility.Collapsed;
+            if(newval == false)
+                input.P2 = input.P;
+        }
+
+        public static readonly DependencyProperty SplitProperty;
+        public bool Split
+        {
+            get => (bool)base.GetValue(SplitProperty);
+            set => base.SetValue(SplitProperty, value);
+        }
+
         enum Selected
-        { L, P, R, None}
+        { L, P, R, None, P2}
         Selected sel = Selected.None;
 
         bool linear = false;
+        bool linear2 = false;
         private void rect_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if(Keyboard.IsKeyDown(Key.LeftAlt))
             {
-                if(!linear)
+                if(Split)
                 {
-                    linear = true;
-                    L = P;
-                    R = P;
-                    //RVisible = false;
-                    //LVisible = false;
+                    if(linear == false)
+                    {
+                        linear = true;
+                        L = P;
+                    }
+                    else
+                    {
+                        linear = false;
+                        L = new Point(P.X - 10, P.Y);
+                    }
                 }
                 else
                 {
-                    linear = false;
-                    L = new Point(P.X - 10, P.Y);
-                    R = new Point(P.X + 10, P.Y);
-                    //RVisible = true;
-                    //LVisible = true;
+                    if (linear == false)
+                    {
+                        linear = true;
+                        L = P;
+                        R = P;
+                    }
+                    else
+                    {
+                        linear = false;
+                        L = new Point(P.X - 10, P.Y);
+                        R = new Point(P.X + 10, P.Y);
+                    }
                 }
                
+                return;
+            }
+
+            if(Keyboard.IsKeyDown(Key.LeftCtrl))
+            {
+                P2 = P;
+                Split = !Split;
                 return;
             }
 
             Mouse.Capture(this);
             sel = Selected.P;
         }
+
+
+        private void rect2_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (Split == false)
+                return;
+            if (Keyboard.IsKeyDown(Key.LeftAlt))
+            {
+                if (linear2 == false)
+                {
+                    linear2 = true;
+                    R = P;
+                }
+                else
+                {
+                    linear2 = false;
+                    R = new Point(P.X + 10, P.Y);
+                }
+
+                return;
+            }
+
+            if (Keyboard.IsKeyDown(Key.LeftCtrl))
+            {
+                P = P2;
+                Split = !Split;
+                return;
+            }
+
+            Mouse.Capture(this);
+            sel = Selected.P2;
+        }
+
 
         private void Canvas_MouseMove(object sender, MouseEventArgs e)
         {
@@ -173,7 +284,14 @@ namespace EngineWPFCoreUI
                 case Selected.P:
                     var point = Mouse.GetPosition(canvas);
                     var dif = point - P;
-                    P = point;
+                    if (Keyboard.IsKeyDown(Key.LeftShift))
+                        P = new Point(P.X, point.Y);
+                    else
+                        P = point;
+                    //if (Split == false)
+                    //    P2 = P;
+                    //else
+                    //    P2 = new Point(P.X, P2.Y);
                     //L += dif;
                     //R += dif;
                     break;
@@ -182,6 +300,18 @@ namespace EngineWPFCoreUI
                     break;
                 case Selected.R:
                     R = Mouse.GetPosition(canvas);
+                    break;
+                case Selected.P2:
+                    var point2 = Mouse.GetPosition(canvas);
+                    var dif2 = point2 - P;
+                    if (Keyboard.IsKeyDown(Key.LeftShift))
+                        P2 = new Point(P2.X, point2.Y);
+                    else
+                        P2 = point2;
+                    //if(Split)
+                    //    P = new Point(P2.X, P.Y);
+                    //L += dif;
+                    //R += dif;
                     break;
             }
         }
