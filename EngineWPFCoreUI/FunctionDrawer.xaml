@@ -14,7 +14,7 @@
                 <Button Click="Button_Click_1">Test</Button>
             </WrapPanel>
             
-            <ItemsControl ItemsSource="{Binding Functions}">
+            <ItemsControl ItemsSource="{Binding Sections}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <Canvas>

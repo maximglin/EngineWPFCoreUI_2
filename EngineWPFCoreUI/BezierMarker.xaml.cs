@@ -254,12 +254,12 @@ namespace EngineWPFCoreUI
                 if (linear2 == false)
                 {
                     linear2 = true;
-                    R = P;
+                    R = P2;
                 }
                 else
                 {
                     linear2 = false;
-                    R = new Point(P.X + 10, P.Y);
+                    R = new Point(P2.X + 10, P2.Y);
                 }
 
                 return;

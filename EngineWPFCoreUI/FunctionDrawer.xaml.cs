@@ -32,8 +32,8 @@ namespace EngineWPFCoreUI
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            (vm.Functions[0] as FunctionVM.BezierVM).AddKeyframe();
-            (vm.Functions[1] as FunctionVM.BezierVM).AddKeyframe();
+            (vm.Sections[0] as FunctionVM.BezierVM).AddKeyframe();
+            (vm.Sections[1] as FunctionVM.BezierVM).AddKeyframe();
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
@@ -348,9 +348,21 @@ namespace EngineWPFCoreUI
             }
         }
 
+        public class ConstVM : BaseViewModel, ISectionVM
+        {
+            public IEnumerable<BezierVM.KeyFrame> KeyFrames => Array.Empty<BezierVM.KeyFrame>();
+
+            public IEnumerable<BezierVM.Segment> Segments => Array.Empty<BezierVM.Segment>();
+
+            public void OnScaleChange((double Tst, double Tend, double Ymin, double Ymax) oldscale, (double Tst, double Tend, double Ymin, double Ymax) newscale)
+            {
+                throw new NotImplementedException();
+            }
+        }
+
         void UpdateScale(double Tst, double Tend, double Ymin, double Ymax)
         {
-            foreach (var f in functions)
+            foreach (var f in sections)
                 f.OnScaleChange((this.Tstart, this.Tend, this.Ymin, this.Ymax), (Tst, Tend, Ymin, Ymax));
         }
         double tstart = 0, tend = 20, ymin = -50, ymax = 50;
@@ -361,8 +373,8 @@ namespace EngineWPFCoreUI
         public double Ymax { get => ymax; set { UpdateScale(Tstart, Tend, Ymin, value); ymax = value; OnPropertyChanged(nameof(Ymax)); } }
 
 
-        List<ISectionVM> functions = new();
-        public IReadOnlyList<ISectionVM> Functions { get => functions.ToList(); }
+        List<ISectionVM> sections = new();
+        public IReadOnlyList<ISectionVM> Sections { get => sections.ToList(); }
 
 
 
@@ -385,7 +397,7 @@ namespace EngineWPFCoreUI
         public void AddFunction()
         {
             var fvm = new BezierVM(this);
-            functions.Add(fvm);
+            sections.Add(fvm);
             fvm.Color = brushes[brush_i % brushes.Length];
 
             brush_i++;
